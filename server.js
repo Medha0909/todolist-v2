@@ -2,16 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
+const server = express();
 
-const app = express();
+server.set('view engine', 'ejs');
 
-app.set('view engine', 'ejs');
-
-app.use(bodyParser.urlencoded({
+server.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(express.static("public"))
+server.use(express.static("public"))
 
 // mongoose.connect("mongodb://0.0.0.0:27017/todolistDB");
 mongoose.connect("mongodb+srv://Medha:Medha800@cluster0.5cnxbpy.mongodb.net/todolistDB");
@@ -43,7 +42,7 @@ const listSchema = {
 
 const List = mongoose.model("List", listSchema);
 
-app.get("/", function(req, res) {
+server.get("/", function(req, res) {
 Item.find({}).then(function(foundItems,items){
   if(foundItems.length ===0){
     Item.insertMany(defaultItems).then(function(items){
@@ -59,7 +58,7 @@ Item.find({}).then(function(foundItems,items){
 });
 });
 
-app.get("/:customListName",function(req,res){
+server.get("/:customListName",function(req,res){
   const customListName = _.capitalize(req.params.customListName);
 
   List.findOne({name: customListName}).then(function(foundList){
@@ -81,7 +80,7 @@ app.get("/:customListName",function(req,res){
 
 });
 
-app.post("/", function(req, res) {
+server.post("/", function(req, res) {
   const itemName = req.body.newItem;
   const listName=req.body.list;
   const item = new Item({
@@ -100,7 +99,7 @@ app.post("/", function(req, res) {
 }
 });
 
-app.post("/delete",function(req,res){
+server.post("/delete",function(req,res){
   const checkedItemID= req.body.checkbox;
   const listName = req.body.listName;
   if(listName === "Today"){
@@ -115,9 +114,10 @@ app.post("/delete",function(req,res){
   }
 });
 
-app.get("/about",function(req, res){
+server.get("/about",function(req, res){
   res.render("about");
 });
-app.listen(3000, function() {
-  console.log("Server started on port 3000");
+
+server.listen(port, function() {
+  console.log("Server started on port "+port);
 });
