@@ -6,12 +6,12 @@ const port = process.env.PORT || 3000;
 const server = express();
 
 server.set('view engine', 'ejs');
-server.set('views', __dirname + '/views');
 
 server.use(bodyParser.urlencoded({
   extended: true
 }));
 server.use(express.static("public"))
+server.use(express.static("views"))
 
 // mongoose.connect("mongodb://0.0.0.0:27017/todolistDB");
 mongoose.connect("mongodb+srv://Medha:Medha800@cluster0.5cnxbpy.mongodb.net/todolistDB");
